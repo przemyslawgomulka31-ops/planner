@@ -54,12 +54,12 @@ function TaskView({task,items,getChildren,onBack,onOpen,onAdd,onPatch,onToggle})
  return <><Header title={task.title} back onBack={onBack} action={task.level!=='detail'?onAdd:null}/><section className="content knowledge-page">
   <div className="knowledge-status"><button className={`status-toggle ${task.completed?'done':''}`} onClick={()=>onToggle(task)}>{task.completed?'✓':'○'}</button><span>{task.completed?'Wykonane':level}</span></div>
   <InlineSection className="knowledge-title" label="Nazwa" value={task.title} onSave={title=>onPatch({title})}/>
-  <InlineSection label="Termin" value={task.dueDate||''} type="date" empty="Bez terminu" display={task.dueDate?fmt(task.dueDate):''} onSave={dueDate=>onPatch({dueDate})}/>
-  <InlineSection label="Opis" value={task.description||''} multiline empty="Brak opisu" onSave={description=>onPatch({description})}/>
-  <PhotoSection images={task.images||[]} onSave={images=>onPatch({images})}/>
-  <InlineSection label="Notatki" value={task.notes||''} multiline empty="Dodaj notatki" onSave={notes=>onPatch({notes})}/>
-  {task.level!=='detail'&&<section className="knowledge-section"><div className="section-head"><h2>{task.level==='main'?'Podzadania':'Checklista'}</h2><span>{items.length}</span></div><div className="task-list">{items.map(t=><TaskRow key={t.id} task={t} kids={getChildren(t.id)} onOpen={()=>onOpen(t.id)} onEdit={()=>onOpen(t.id)} onToggle={()=>onToggle(t)}/>)}</div>{!items.length&&<p className="section-empty">Brak elementów</p>}</section>}
-  <InlineSection label="Linki i materiały" value={task.links||''} multiline empty="Dodaj link lub materiał" onSave={links=>onPatch({links})}/>
+  {task.dueDate&&<InlineSection label="Termin" value={task.dueDate} type="date" display={fmt(task.dueDate)} onSave={dueDate=>onPatch({dueDate})}/>}
+  {task.description&&<InlineSection label="Opis" value={task.description} multiline onSave={description=>onPatch({description})}/>}
+  {task.images?.length>0&&<PhotoSection images={task.images} onSave={images=>onPatch({images})}/>}
+  {task.notes&&<InlineSection label="Notatki" value={task.notes} multiline onSave={notes=>onPatch({notes})}/>}
+  {task.level!=='detail'&&items.length>0&&<section className="knowledge-section"><div className="section-head"><h2>{task.level==='main'?'Podzadania':'Checklista'}</h2><span>{items.length}</span></div><div className="task-list">{items.map(t=><TaskRow key={t.id} task={t} kids={getChildren(t.id)} onOpen={()=>onOpen(t.id)} onEdit={()=>onOpen(t.id)} onToggle={()=>onToggle(t)}/>)}</div></section>}
+  {task.links&&<InlineSection label="Linki i materiały" value={task.links} multiline onSave={links=>onPatch({links})}/>}
   <section className="knowledge-meta"><span>Utworzono {fmt(task.createdAt,true)}</span>{task.updatedAt&&<span>Edytowano {fmt(task.updatedAt,true)}</span>}</section>
  </section></>
 }
