@@ -83,7 +83,7 @@ button{cursor:pointer}
 .empty h3{color:var(--ink);font-size:15px;margin:13px 0 5px}
 .empty p{color:var(--muted);font-size:12px;margin:0}
 .empty button{margin-top:16px;border:0;color:var(--blue);font-weight:750;background:#edf5ff;padding:10px 14px;border-radius:11px}
-.bottom-nav{position:fixed;z-index:15;bottom:max(4px,calc(var(--safe-bottom) * .45));left:50%;transform:translateX(-50%);width:min(380px,calc(100% - 52px));height:60px;padding:5px 10px;background:#fffffff0;backdrop-filter:blur(20px);border:1px solid #e5e9ef;border-radius:22px;box-shadow:0 12px 34px #10204026;display:flex;align-items:center;justify-content:space-around}
+.bottom-nav{position:fixed;z-index:50;bottom:max(4px,calc(env(safe-area-inset-bottom,0px) * .45));left:50%;transform:translate3d(-50%,0,0);width:min(380px,calc(100% - 52px));height:60px;margin:0;padding:5px 10px;background:#fffffff0;backdrop-filter:blur(20px);border:1px solid #e5e9ef;border-radius:22px;box-shadow:0 12px 34px #10204026;display:flex;align-items:center;justify-content:space-around;will-change:transform}
 .bottom-nav button{width:76px;height:50px;border:0;border-radius:18px;background:transparent;color:#9aa3af;display:grid;place-items:center;padding:0;transition:.18s ease}
 .bottom-nav svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .bottom-nav button.active{color:#111827;background:#eef1f5;transform:scale(1.04)}

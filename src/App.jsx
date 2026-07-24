@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import './App.css'
 
 const COLORS = ['#3578f6', '#5cc9a5', '#9b73ed', '#ffad4a', '#f36d8d']
@@ -43,7 +44,7 @@ export default function App(){
  else if(view.name==='trash')page=<Trash tasks={tasks} setTasks={setTasks} flash={flash}/>
  else if(view.name==='task'&&cur)page=<TaskView task={cur} items={active(cur.id)} getChildren={children} onBack={()=>cur.parentId?nav({name:'task',id:cur.parentId}):nav({name:'home'})} onOpen={id=>nav({name:'task',id})} onAdd={()=>nav({name:'form',parentId:cur.id})} onPatch={data=>patch(cur.id,data)} onToggle={toggle} onTrash={t=>trash(t,false)}/>
  else page=<Home tasks={tasks.filter(t=>!t.parentId&&!t.archived&&!t.deleted)} getChildren={children} onOpen={id=>nav({name:'task',id})} onAdd={()=>nav({name:'form'})} onEdit={id=>nav({name:'form',id})} onTrash={t=>trash(t,false)}/>
- return <main className="phone-app">{page}{view.name!=='form'&&<BottomNav active={view.name} go={nav}/>} {toast&&<div className="toast"><span>✓</span>{toast}</div>}</main>
+ return <><main className="phone-app">{page}{toast&&<div className="toast"><span>✓</span>{toast}</div>}</main>{view.name!=='form'&&createPortal(<BottomNav active={view.name} go={nav}/>,document.body)}</>
 }
 
 function Header({title='Moje zadania',back,onBack,action}){return <header className="topbar">{back?<button className="icon-btn" onClick={onBack} aria-label="Wróć">‹</button>:<span/>}<strong>{title}</strong>{action?<button className="add-round" onClick={action} aria-label="Dodaj zadanie"/>:<span/>}</header>}
