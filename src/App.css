@@ -24,6 +24,7 @@ button{cursor:pointer}
 .section-title h2{font-size:16px;color:var(--ink);margin:0}
 .section-title span{margin-left:8px;background:#edf3fd;color:var(--blue);font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px}
 .task-list{border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 7px 24px #26416b12}
+.swipe-row{position:relative;overflow:hidden;background:#e5484d}.swipe-row+.swipe-row{border-top:1px solid var(--line)}.swipe-delete{position:absolute;z-index:0;right:0;top:0;width:84px;height:100%;border:0;background:#e5484d;color:#fff;font-size:12px;font-weight:750}.swipe-row .task-row{position:relative;z-index:1;border-bottom:0;transition:transform .2s ease;touch-action:pan-y;background:#fff}
 .task-row{min-height:78px;display:flex;align-items:center;padding:13px 12px;background:#fff;border-bottom:1px solid var(--line);gap:12px}
 .task-row:last-child{border:0}
 .task-symbol{flex:0 0 40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:18px;color:#526072;background:#f1f3f6;font-weight:800}
