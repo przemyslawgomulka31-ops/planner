@@ -1,66 +1,60 @@
 import { useState } from 'react'
+import PlanNotes from './PlanNotes'
+import { finishStep, getFocus, moveItem, stageDone } from './plan'
 
+function AddItem({ label, onAdd }) {
+  return <form className="add-stage" onSubmit={e => { e.preventDefault(); const title = new FormData(e.currentTarget).get('title').trim(); if (!title) return; onAdd(title); e.currentTarget.reset() }}>
+    <input name="title" aria-label={label} placeholder={label} required/><button className="secondary">Dodaj</button>
+  </form>
+}
+function Rename({ value, onSave, label }) {
+  const [editing, setEditing] = useState(false)
+  return editing ? <form className="rename-item" onSubmit={e => { e.preventDefault(); const title = new FormData(e.currentTarget).get('title').trim(); if (title) { onSave(title); setEditing(false) } }}><input aria-label={label} name="title" defaultValue={value} required autoFocus/><button className="secondary">Zapisz</button><button type="button" className="text-button" onClick={() => setEditing(false)}>Anuluj</button></form> : <button className="rename-title" aria-label={`Edytuj: ${value}`} onClick={() => setEditing(true)}>{value}<span aria-hidden="true"> ✎</span></button>
+}
 export default function ProjectPlanner({ task, onPatch, onComplete, children }) {
   const [tab, setTab] = useState('now')
-  const [editing, setEditing] = useState(false)
-  const [justDone, setJustDone] = useState(false)
-  const milestones = task.milestones || []
-  const saveStep = e => {
-    e.preventDefault()
-    const text = new FormData(e.currentTarget).get('step').trim()
-    if (!text) return
-    onPatch({ nextAction: text })
-    setEditing(false); setJustDone(false)
-  }
-  const complete = () => {
-    if (!task.nextAction) return
-    onPatch({ nextAction: '', sessions: [{ date: new Date().toISOString(), done: task.nextAction }, ...(task.sessions || [])] })
-    setJustDone(true); setEditing(false)
-  }
+  const [notice, setNotice] = useState('')
+  const { stages, stage, step, complete } = getFocus(task)
+  const saveStages = next => onPatch({ planStages: next, nextAction: '' })
+  const updateStage = (id, update) => saveStages(stages.map(s => s.id === id ? { ...s, ...update } : s))
+  const total = stages.reduce((n, s) => n + s.steps.length, 0)
+  const done = stages.reduce((n, s) => n + s.steps.filter(t => t.done).length, 0)
   return <div className="simple-project">
     <div className="project-tabs" role="tablist" aria-label="Widok projektu">
-      {[['now', 'Teraz'], ['plan', 'Plan'], ['history', 'Historia']].map(([id, label]) => <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)}>{label}</button>)}
+      {[['now', 'Teraz'], ['plan', 'Plan'], ['history', 'Historia']].map(([id, label]) => <button key={id} role="tab" aria-selected={tab === id} onClick={() => { setTab(id); setNotice('') }}>{label}</button>)}
     </div>
-    {tab === 'now' && <section className="focus-step" role="tabpanel" aria-label="Teraz">
-      {task.nextAction && !editing ? <>
-        <p className="step-caption">Następny krok</p>
-        <h1>{task.nextAction}</h1>
-        <button className="primary" onClick={complete}>Zrobione ✓</button>
-        <button className="text-button" onClick={() => setEditing(true)}>Zmień krok</button>
-      </> : <form onSubmit={saveStep}>
-        {justDone && <p className="completion-note" role="status">✓ Krok zapisany w historii</p>}
-        <label className="step-question" htmlFor="next-step">{editing ? 'Zmień krok' : justDone ? 'Co dalej?' : 'Co robisz teraz?'}</label>
-        <textarea id="next-step" name="step" autoFocus required key={editing ? 'edit' : 'new'} defaultValue={editing ? task.nextAction : ''} placeholder="Np. zrobić pierwsze ćwiczenie" rows="3"/>
-        <button className="primary">Zapisz krok</button>
-        {editing && <button type="button" className="text-button" onClick={() => setEditing(false)}>Anuluj</button>}
-      </form>}
+    {tab === 'now' && <section className="planned-now" role="tabpanel" aria-label="Teraz">
+      {notice && <p className="completion-note" role="status">{notice}</p>}
+      {stage ? <>
+        <p className="step-caption">Etap {stages.indexOf(stage) + 1} z {stages.length}</p><h2>{stage.title}</h2>
+        <p className="plan-count">{stage.steps.filter(s => s.done).length} / {stage.steps.length} zadań wykonanych</p>
+        {step ? <div className="focus-step"><p className="step-caption">Następne zadanie</p><h1>{step.title}</h1><button className="primary" onClick={() => { onPatch(project => finishStep(project, step.id)); setNotice('✓ Zadanie wykonane') }}>Zrobione ✓</button></div> : <div className="plan-empty"><p>Ten etap nie ma jeszcze zadań.</p><button className="primary" onClick={() => setTab('plan')}>Dodaj zadania w Planie</button></div>}
+        <div className="now-steps">{stage.steps.map(s => <div key={s.id} className={`now-step ${s.done ? 'is-done' : ''} ${step?.id === s.id ? 'current-step' : ''}`}><span aria-hidden="true">{s.done ? '✓' : step?.id === s.id ? '→' : '○'}</span><span>{s.title}</span>{!s.done && step?.id !== s.id && <button className="text-button" onClick={() => onPatch({ selectedStepId: s.id, planStages: stages })}>Zrób teraz</button>}</div>)}</div>
+      </> : <div className="plan-empty"><h1>{complete ? 'Plan wykonany ✓' : 'Zacznij od planu'}</h1><p>{complete ? 'Wszystkie etapy są gotowe.' : 'Dodaj etapy, a w nich zadania do wykonania.'}</p><button className="primary" onClick={complete ? onComplete : () => setTab('plan')}>{complete ? 'Zakończ projekt' : 'Ułóż plan'}</button>{complete && <button className="text-button" onClick={() => setTab('plan')}>Dodaj kolejne zadania</button>}</div>}
+      {stages.length > 0 && <div className="roadmap"><h3>Cały plan <small>{done} / {total}</small></h3>{stages.map((s, i) => <details key={s.id}><summary><span>{stageDone(s) ? '✓' : `${i + 1}.`} {s.title}</span><small>{s.steps.filter(t => t.done).length}/{s.steps.length}</small></summary>{s.steps.length ? s.steps.map(t => <div className="now-step" key={t.id}><span>{t.done ? '✓' : '○'}</span><span>{t.title}</span>{!t.done && step?.id !== t.id && <button className="text-button" onClick={() => onPatch({ selectedStepId: t.id, planStages: stages })}>Zrób teraz</button>}</div>) : <button className="text-button" onClick={() => setTab('plan')}>Dodaj zadania</button>}</details>)}</div>}
     </section>}
     {tab === 'plan' && <section className="simple-plan" role="tabpanel" aria-label="Plan">
-      <form key={task.id} onSubmit={e => { e.preventDefault(); const data = Object.fromEntries(new FormData(e.currentTarget)); if (!data.title.trim()) return; onPatch({ ...data, title: data.title.trim() }); setTab('now') }}>
-        <label>Nazwa projektu<input name="title" defaultValue={task.title} required/></label>
-        <label>Cel<input name="goal" defaultValue={task.goal || ''} placeholder="Co chcesz osiągnąć?"/></label>
-        <details><summary>Więcej szczegółów</summary>
-          <label>Gotowe, kiedy<input name="win" defaultValue={task.win || ''}/></label>
-          <label>Dlaczego<input name="why" defaultValue={task.why || ''}/></label>
-          <label>Termin / horyzont<input name="horizon" defaultValue={task.horizon || task.dueDate || ''}/></label>
-        </details>
-        <button className="secondary" type="submit">Zapisz plan</button>
-      </form>
-      <div className="simple-stages"><h2>Etapy</h2>
-        {milestones.map((m, i) => <div className="stage-row" key={m.id}><input aria-label={`Ukończ etap: ${m.title || i + 1}`} type="checkbox" checked={m.done} onChange={e => onPatch({ milestones: milestones.map(x => x.id === m.id ? { ...x, done: e.target.checked } : x) })}/><span className={m.done ? 'is-done' : ''}>{m.title || `Etap ${i + 1}`}</span><button type="button" aria-label={`Usuń etap ${m.title || i + 1}`} onClick={() => onPatch({ milestones: milestones.filter(x => x.id !== m.id) })}>×</button></div>)}
-        <form className="add-stage" onSubmit={e => { e.preventDefault(); const title = new FormData(e.currentTarget).get('stage').trim(); if (!title) return; onPatch({ milestones: [...milestones, { id: crypto.randomUUID(), title, done: false }] }); e.currentTarget.reset() }}><input name="stage" aria-label="Nowy etap" placeholder="Nowy etap" required/><button className="secondary">Dodaj</button></form>
-      </div>
+      <h2>Etapy i zadania</h2>
+      {stages.map((s, i) => <section className="plan-stage" key={s.id}>
+        <div className="stage-heading"><span>{i + 1}.</span><Rename value={s.title} label="Nazwa etapu" onSave={title => updateStage(s.id, { title })}/></div>
+        <div className="order-controls"><button disabled={i === 0} onClick={() => saveStages(moveItem(stages, i, -1))} aria-label={`Przesuń etap ${s.title} w górę`}>↑</button><button disabled={i === stages.length - 1} onClick={() => saveStages(moveItem(stages, i, 1))} aria-label={`Przesuń etap ${s.title} w dół`}>↓</button><button onClick={() => { if (confirm(`Usunąć etap „${s.title}” wraz z zadaniami?`)) saveStages(stages.filter(x => x.id !== s.id)) }}>Usuń etap</button></div>
+        {s.steps.map((t, j) => <div className="plan-task" key={t.id}><div className="plan-task-title"><input type="checkbox" aria-label={`Wykonano: ${t.title}`} checked={t.done} onChange={e => { if (e.target.checked) onPatch(project => finishStep(project, t.id)); else updateStage(s.id, { done: false, steps: s.steps.map(x => x.id === t.id ? { ...x, done: false } : x) }) }}/><Rename value={t.title} label="Nazwa zadania" onSave={title => updateStage(s.id, { steps: s.steps.map(x => x.id === t.id ? { ...x, title } : x) })}/></div><div className="order-controls"><button disabled={j === 0} onClick={() => updateStage(s.id, { steps: moveItem(s.steps, j, -1) })} aria-label={`Przesuń zadanie ${t.title} w górę`}>↑</button><button disabled={j === s.steps.length - 1} onClick={() => updateStage(s.id, { steps: moveItem(s.steps, j, 1) })} aria-label={`Przesuń zadanie ${t.title} w dół`}>↓</button><button onClick={() => { if (confirm(`Usunąć zadanie „${t.title}”?`)) updateStage(s.id, { steps: s.steps.filter(x => x.id !== t.id), done: false }) }}>Usuń</button></div></div>)}
+        <AddItem label="Dodaj zadanie do etapu" onAdd={title => updateStage(s.id, { done: false, steps: [...s.steps, { id: crypto.randomUUID(), title, done: false }] })}/>
+        <PlanNotes scope={s.title} entries={s.planNotes} onSave={planNotes => updateStage(s.id, { planNotes })}/>
+      </section>)}
+      <AddItem label="Nazwa nowego etapu" onAdd={title => saveStages([...stages, { id: crypto.randomUUID(), title, steps: [] }])}/>
+      {stages.length > 0 && <button className="primary start-plan" onClick={() => setTab('now')}>Przejdź do działania →</button>}
+      <section className="project-note-section"><h3>Cały projekt</h3><PlanNotes scope="cały projekt" entries={task.planNotes} onSave={planNotes => onPatch({ planNotes })}/></section>
+      <details className="project-settings"><summary>Cel i szczegóły projektu</summary><form onSubmit={e => { e.preventDefault(); const data = Object.fromEntries(new FormData(e.currentTarget)); if (!data.title.trim()) return; onPatch({ ...data, title: data.title.trim() }); setNotice('Zapisano szczegóły projektu') }}>
+        <label>Nazwa projektu<input name="title" defaultValue={task.title} required/></label><label>Cel<input name="goal" defaultValue={task.goal || ''}/></label><label>Gotowe, kiedy<input name="win" defaultValue={task.win || ''}/></label><label>Dlaczego<input name="why" defaultValue={task.why || ''}/></label><label>Termin / horyzont<input name="horizon" defaultValue={task.horizon || task.dueDate || ''}/></label><button className="secondary">Zapisz szczegóły</button>{notice && <p role="status">{notice}</p>}
+      </form></details>
       {children}
-      <button className="text-button" onClick={() => { onComplete(); setTab('now') }}>{task.completed ? 'Przywróć projekt' : 'Zakończ cały projekt'}</button>
+      <button className="text-button" onClick={onComplete}>{task.completed ? 'Przywróć projekt' : 'Zakończ cały projekt'}</button>
     </section>}
     {tab === 'history' && <section className="step-history" role="tabpanel" aria-label="Historia">
-      {!task.sessions?.length && <p className="muted-value">Wykonane kroki pojawią się tutaj.</p>}
-      {(task.sessions || []).map((s, i) => <article key={i}><span className="history-check">✓</span><div><p>{s.done}</p><small>{new Date(s.date).toLocaleString('pl-PL')}</small>{(s.blocked || s.next) && <details><summary>Szczegóły</summary>{s.blocked && <p>{s.blocked}</p>}{s.next && <p>Następny krok: {s.next}</p>}</details>}</div></article>)}
-      {(task.weekReviews?.length > 0 || task.weekActions?.some(a => a.text) || task.weekPriority || task.trigger || task.routine || task.place || task.minutes) && <details className="previous-plan"><summary>Wcześniejsze plany</summary>
-        {task.weekPriority && <p>{task.weekPriority}</p>}{(task.weekActions || []).filter(a => a.text).map((a, i) => <p key={i}>{a.done ? '✓' : '○'} {a.text}</p>)}
-        {[task.trigger, task.routine, task.place, task.minutes && `${task.minutes} min`].filter(Boolean).length > 0 && <p>{[task.trigger, task.routine, task.place, task.minutes && `${task.minutes} min`].filter(Boolean).join(' · ')}</p>}
-        {(task.weekReviews || []).map((r, i) => <article key={i}><div><small>{new Date(r.date).toLocaleDateString('pl-PL')}</small><p>{r.progress}</p>{r.obstacles && <p>{r.obstacles}</p>}{r.priority && <p>{r.priority}</p>}{(r.actions || []).filter(a => a.text).map((a, j) => <p key={j}>{a.done ? '✓' : '○'} {a.text}</p>)}</div></article>)}
-      </details>}
+      {!task.sessions?.length && <p className="muted-value">Wykonane zadania pojawią się tutaj.</p>}
+      {(task.sessions || []).map((s, i) => <article key={i}><span className="history-check">✓</span><div><p>{s.done}</p><small>{s.stageTitle && `${s.stageTitle} · `}{new Date(s.date).toLocaleString('pl-PL')}</small>{(s.blocked || s.next) && <details><summary>Szczegóły</summary>{s.blocked && <p>{s.blocked}</p>}{s.next && <p>Następny krok: {s.next}</p>}</details>}</div></article>)}
+      {(task.weekReviews?.length > 0 || task.weekActions?.some(a => a.text) || task.weekPriority || task.trigger || task.routine || task.place || task.minutes) && <details className="previous-plan"><summary>Wcześniejsze plany</summary>{task.weekPriority && <p>{task.weekPriority}</p>}{(task.weekActions || []).filter(a => a.text).map((a, i) => <p key={i}>{a.done ? '✓' : '○'} {a.text}</p>)}<p>{[task.trigger, task.routine, task.place, task.minutes && `${task.minutes} min`].filter(Boolean).join(' · ')}</p>{(task.weekReviews || []).map((r, i) => <article key={i}><div><small>{new Date(r.date).toLocaleDateString('pl-PL')}</small><p>{r.progress}</p>{r.obstacles && <p>{r.obstacles}</p>}{r.priority && <p>{r.priority}</p>}{(r.actions || []).filter(a => a.text).map((a, j) => <p key={j}>{a.done ? '✓' : '○'} {a.text}</p>)}</div></article>)}</details>}
     </section>}
   </div>
 }
