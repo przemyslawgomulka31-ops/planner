@@ -36,3 +36,14 @@ export function moveItem(items, index, direction) {
   ;[result[index], result[next]] = [result[next], result[index]]
   return result
 }
+
+export function undoStep(project, stepId) {
+  const stages = getStages(project)
+  if (!stages.some(s => s.steps.some(t => t.id === stepId && t.done))) return {}
+  const sessionIndex = (project.sessions || []).findIndex(s => s.stepId === stepId)
+  return {
+    planStages: stages.map(s => ({ ...s, steps: s.steps.map(t => t.id === stepId ? { ...t, done: false } : t) })),
+    selectedStepId: stepId,
+    sessions: (project.sessions || []).filter((_, i) => i !== sessionIndex),
+  }
+}
