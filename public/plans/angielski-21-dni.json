@@ -1,0 +1,164 @@
+{
+  "format": "planner-plan",
+  "version": 1,
+  "project": {
+    "title": "Angielski w pracy — 21 dni",
+    "goal": "Ćwiczyć komunikację po angielsku w pracy technicznej: obowiązki, awarie, współpracę i samodzielne wypowiedzi.",
+    "horizon": "21 dni · 15 minut dziennie",
+    "planNotes": [
+      {
+        "id": "missing-final-test",
+        "kind": "problem",
+        "text": "Dzień 21: uzupełnić treść sprawdzianu końcowego — nie została dołączona do przesłanego planu.",
+        "createdAt": "2026-09-29T12:00:00Z",
+        "resolved": false
+      }
+    ],
+    "planStages": [
+      {
+        "id": "week-1",
+        "title": "Tydzień 1 — podstawy komunikacji w pracy",
+        "steps": [
+          {
+            "id": "day-1",
+            "title": "Dzień 1 — Przedstawianie się zawodowo",
+            "description": "15 minut\n\nTemat i gramatyka:\nI work as…, I am responsible for…; przedimki a/an.\n\nZadanie praktyczne:\nNapisz 8 zdań o stanowisku i obowiązkach. Nagraj minutową wypowiedź. Zachowaj ją do porównania z dniem 21.",
+            "done": false
+          },
+          {
+            "id": "day-2",
+            "title": "Dzień 2 — Codzienne obowiązki",
+            "description": "15 minut\n\nTemat i gramatyka:\nPresent Simple, końcówka -s, pytania z do/does.\n\nZadanie praktyczne:\nOpisz typowy dzień pracy w 8 zdaniach. Ułóż 4 pytania do kolegi o jego obowiązki i odpowiedz na nie.",
+            "done": false
+          },
+          {
+            "id": "day-3",
+            "title": "Dzień 3 — Co dzieje się teraz?",
+            "description": "15 minut\n\nTemat i gramatyka:\nPresent Continuous a Present Simple.\n\nZadanie praktyczne:\nUłóż 6 par zdań: „Zwykle robię X, ale dzisiaj robię Y”. Przykład: I usually maintain machines, but today I’m updating a PLC program.",
+            "done": false
+          },
+          {
+            "id": "day-4",
+            "title": "Dzień 4 — Awarie i przeszłość",
+            "description": "15 minut\n\nTemat i gramatyka:\nPast Simple: zdania, przeczenia i pytania.\n\nZadanie praktyczne:\nOpisz prawdziwą lub wymyśloną awarię: co się stało, co sprawdziłeś i jaki był wynik. Napisz 80–100 słów.",
+            "done": false
+          },
+          {
+            "id": "day-5",
+            "title": "Dzień 5 — Przebieg zdarzenia",
+            "description": "15 minut\n\nTemat i gramatyka:\nPast Continuous + Past Simple, when/while.\n\nZadanie praktyczne:\nNapisz 6 zdań typu: The machine stopped while we were testing it. Następnie opowiedz jedną sytuację przez minutę.",
+            "done": false
+          },
+          {
+            "id": "day-6",
+            "title": "Dzień 6 — Pytania diagnostyczne",
+            "description": "15 minut\n\nTemat i gramatyka:\nWhat, when, where, how often; szyk pytań.\n\nZadanie praktyczne:\nPrzygotuj 8 pytań do operatora, np. When did the problem start? Odegraj obie strony rozmowy.",
+            "done": false
+          },
+          {
+            "id": "day-7",
+            "title": "Dzień 7 — Powtórka i sprawdzian",
+            "description": "15 minut\n\nTemat i gramatyka:\nBez nowej gramatyki.\n\nZadanie praktyczne:\nOpowiedz przez 2 minuty o pracy i ostatniej awarii. Napisz krótki raport, potem sprawdź czasy, am/is/are oraz końcówki -s.",
+            "done": false
+          }
+        ]
+      },
+      {
+        "id": "week-2",
+        "title": "Tydzień 2 — rozwiązywanie problemów i współpraca",
+        "steps": [
+          {
+            "id": "day-8",
+            "title": "Dzień 8 — Doświadczenie zawodowe",
+            "description": "15 minut\n\nTemat i gramatyka:\nPresent Perfect: have/has + III forma, ever/never.\n\nZadanie praktyczne:\nNapisz 6 zdań o doświadczeniu i 4 pytania zaczynające się od Have you ever…? Odpowiedz na nie na głos.",
+            "done": false
+          },
+          {
+            "id": "day-9",
+            "title": "Dzień 9 — Doświadczenie a konkretna data",
+            "description": "15 minut\n\nTemat i gramatyka:\nPresent Perfect kontra Past Simple; for/since.\n\nZadanie praktyczne:\nUłóż 5 par zdań, np. I have worked with PLCs. Yesterday, I modified a program. Dodaj 2 zdania o stażu pracy.",
+            "done": false
+          },
+          {
+            "id": "day-10",
+            "title": "Dzień 10 — Raportowanie postępu",
+            "description": "15 minut\n\nTemat i gramatyka:\nAlready, yet, just.\n\nZadanie praktyczne:\nPrzygotuj aktualizację dla przełożonego: co już zrobiłeś, czego jeszcze nie zrobiłeś i co właśnie skończyłeś.",
+            "done": false
+          },
+          {
+            "id": "day-11",
+            "title": "Dzień 11 — Plany i ustalenia",
+            "description": "15 minut\n\nTemat i gramatyka:\nGoing to; Present Continuous dla ustalonych spotkań; will dla spontanicznych decyzji.\n\nZadanie praktyczne:\nOpisz plan następnego tygodnia. Dodaj krótką rozmowę, w której ustalasz termin testu z kolegą.",
+            "done": false
+          },
+          {
+            "id": "day-12",
+            "title": "Dzień 12 — Obowiązki i rady",
+            "description": "15 minut\n\nTemat i gramatyka:\nMust, have to, should. Różnica: mustn’t i don’t have to.\n\nZadanie praktyczne:\nNapisz 4 obowiązki, 2 zakazy i 2 rady dotyczące znanego Ci zadania. Wyjaśnij je na głos prostymi słowami.",
+            "done": false
+          },
+          {
+            "id": "day-13",
+            "title": "Dzień 13 — Warunki i skutki",
+            "description": "15 minut\n\nTemat i gramatyka:\nFirst Conditional: If + Present Simple, will + czasownik.\n\nZadanie praktyczne:\nUłóż 8 zdań o możliwych sytuacjach, np. If the test fails, we’ll check the configuration.",
+            "done": false
+          },
+          {
+            "id": "day-14",
+            "title": "Dzień 14 — Powtórka i rozmowa",
+            "description": "15 minut\n\nTemat i gramatyka:\nDoświadczenie, postęp, plany.\n\nZadanie praktyczne:\nOdegraj 3-minutową rozmowę z przełożonym. Omów zakończone zadanie, aktualny problem i następny krok. Napisz podsumowanie w 80–100 słowach.",
+            "done": false
+          }
+        ]
+      },
+      {
+        "id": "week-3",
+        "title": "Tydzień 3 — samodzielna komunikacja na poziomie B1",
+        "steps": [
+          {
+            "id": "day-15",
+            "title": "Dzień 15 — Porównywanie rozwiązań",
+            "description": "15 minut\n\nTemat i gramatyka:\nStopniowanie, too/enough.\n\nZadanie praktyczne:\nPorównaj dwa urządzenia lub rozwiązania: koszt, szybkość, niezawodność i łatwość obsługi. Uzasadnij wybór.",
+            "done": false
+          },
+          {
+            "id": "day-16",
+            "title": "Dzień 16 — Wyjaśnianie procesu",
+            "description": "15 minut\n\nTemat i gramatyka:\nFirst, then, next, finally. Podstawy strony biernej: is checked, is connected.\n\nZadanie praktyczne:\nOpisz znany Ci proces w 6–8 krokach. Następnie wyjaśnij go na głos osobie bez wiedzy technicznej.",
+            "done": false
+          },
+          {
+            "id": "day-17",
+            "title": "Dzień 17 — Uprzejme prośby i wyjaśnienia",
+            "description": "15 minut\n\nTemat i gramatyka:\nCould you…? Could you clarify…? Do you mean…?\n\nZadanie praktyczne:\nNapisz wiadomość do wsparcia technicznego: problem, objawy, wykonane sprawdzenia i prośba o pomoc. Cel: 100–120 słów.",
+            "done": false
+          },
+          {
+            "id": "day-18",
+            "title": "Dzień 18 — Opinie i propozycje",
+            "description": "15 minut\n\nTemat i gramatyka:\nI think…, because…, however…; Second Conditional.\n\nZadanie praktyczne:\nZaproponuj usprawnienie w pracy. Wyjaśnij korzyść i trudność. Dodaj 3 zdania typu: If we had more time, we would…",
+            "done": false
+          },
+          {
+            "id": "day-19",
+            "title": "Dzień 19 — Angielski poza pracą",
+            "description": "15 minut\n\nTemat i gramatyka:\nPodróże, zainteresowania, opowiadanie historii.\n\nZadanie praktyczne:\nOpowiedz o wycieczce w góry: przygotowania, przebieg, trudność i wrażenia. Mów przez 2–3 minuty, potem zapisz krótkie podsumowanie.",
+            "done": false
+          },
+          {
+            "id": "day-20",
+            "title": "Dzień 20 — Symulacja dnia pracy po angielsku",
+            "description": "15 minut\n\nTemat i gramatyka:\nŁączenie poznanych konstrukcji.\n\nZadanie praktyczne:\nPrzedstaw się nowemu koledze, przyjmij zgłoszenie awarii, dopytaj o szczegóły i przekaż status przełożonemu. Mów na głos, korzystając tylko z haseł.",
+            "done": false
+          },
+          {
+            "id": "day-21",
+            "title": "Dzień 21 — Test końcowy i porównanie",
+            "description": "15 minut\n\nTemat i gramatyka:\nBez nowego materiału.\n\nZadanie praktyczne:\nWykonaj sprawdzian i porównaj wypowiedź z nagraniem z dnia 1.\nDo uzupełnienia: w przesłanej tabeli nie było treści sprawdzianu końcowego.",
+            "done": false
+          }
+        ]
+      }
+    ]
+  }
+}

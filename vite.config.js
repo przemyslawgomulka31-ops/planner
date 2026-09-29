@@ -6,11 +6,11 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig({
   plugins: [react(), VitePWA({
     registerType: 'autoUpdate',
-    includeAssets: ['favicon.svg'],
+    includeAssets: ['favicon.svg', 'plans/*.json'],
     manifest: {
       name: 'Planner — Twój plan', short_name: 'Planner',
       description: 'Prosty planner z zadaniami, podzadaniami i archiwum.',
-      theme_color: '#176af5', background_color: '#ffffff',
+      theme_color: '#1c2320', background_color: '#151a18',
       display: 'standalone', orientation: 'portrait', start_url: '/',
       icons: [
         { src: '/pwa-192.svg', sizes: '192x192', type: 'image/svg+xml', purpose: 'any' },

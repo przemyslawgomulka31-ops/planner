@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import PlanNotes from './PlanNotes'
+import { downloadPlan } from './planTransfer'
 import StepDiscussion from './StepDiscussion'
 import { finishStep, getFocus, moveItem, stageDone } from './plan'
 
@@ -15,6 +16,7 @@ function Rename({ value, onSave, label }) {
 export default function ProjectPlanner({ task, onPatch, onComplete, children }) {
   const [tab, setTab] = useState('now')
   const [notice, setNotice] = useState('')
+  const [exportError, setExportError] = useState('')
   const [lastDone, setLastDone] = useState(null)
   const { stages, stage, step, complete } = getFocus(task)
   const saveStages = next => onPatch({ planStages: next, nextAction: '' })
@@ -25,7 +27,7 @@ export default function ProjectPlanner({ task, onPatch, onComplete, children }) 
   const openDiscussions = Object.entries(task.stepDiscussions || {}).filter(([, value]) => !value.resolved)
   const otherDiscussions = openDiscussions.filter(([id]) => id !== lastDone && !stage?.steps.some(t => t.id === id && t.done))
   const stepTitle = id => stages.flatMap(s => s.steps).find(t => t.id === id)?.title || task.sessions?.find(s => s.stepId === id)?.done || 'Ukończone zadanie'
-  const renderStep = t => <div key={t.id}><div className={`now-step ${step?.id === t.id ? 'current-step' : ''}`}><span>{t.done ? '✓' : step?.id === t.id ? '→' : '○'}</span><span className={t.done ? 'is-done' : ''}>{t.title}</span>{!t.done && step?.id !== t.id && <button className="text-button" onClick={() => onPatch({ selectedStepId: t.id, planStages: stages })}>Zrób teraz</button>}</div>{t.done && t.id !== lastDone && discussion(t.id)}</div>
+  const renderStep = t => <div key={t.id}><div className={`now-step ${step?.id === t.id ? 'current-step' : ''}`}><span>{t.done ? '✓' : step?.id === t.id ? '→' : '○'}</span><span className={t.done ? 'is-done' : ''}>{t.title}</span>{!t.done && step?.id !== t.id && <button className="text-button" onClick={() => onPatch({ selectedStepId: t.id, planStages: stages })}>Zrób teraz</button>}</div>{t.description && <details className="task-instruction"><summary>Instrukcja</summary><p className="step-instructions">{t.description}</p></details>}{t.done && t.id !== lastDone && discussion(t.id)}</div>
   return <div className="simple-project">
     <div className="project-tabs" role="tablist" aria-label="Widok projektu">
       {[['now', 'Teraz'], ['plan', 'Plan'], ['history', 'Historia']].map(([id, label]) => <button key={id} role="tab" aria-selected={tab === id} onClick={() => { setTab(id); setNotice('') }}>{label}</button>)}
@@ -36,7 +38,7 @@ export default function ProjectPlanner({ task, onPatch, onComplete, children }) 
       {stage ? <>
         <p className="step-caption">Etap {stages.indexOf(stage) + 1} z {stages.length}</p><h2>{stage.title}</h2>
         <p className="plan-count">{stage.steps.filter(s => s.done).length} / {stage.steps.length} zadań wykonanych</p>
-        {step ? <div className="focus-step"><p className="step-caption">Następne zadanie</p><h1>{step.title}</h1><button className="primary" onClick={() => { onPatch(project => finishStep(project, step.id)); setNotice('✓ Zadanie wykonane'); setLastDone(step.id) }}>Zrobione ✓</button></div> : <div className="plan-empty"><p>Ten etap nie ma jeszcze zadań.</p><button className="primary" onClick={() => setTab('plan')}>Dodaj zadania w Planie</button></div>}
+        {step ? <div className="focus-step"><p className="step-caption">Następne zadanie</p><h1>{step.title}</h1>{step.description && <p className="step-instructions">{step.description}</p>}<button className="primary" onClick={() => { onPatch(project => finishStep(project, step.id)); setNotice('✓ Zadanie wykonane'); setLastDone(step.id) }}>Zrobione ✓</button></div> : <div className="plan-empty"><p>Ten etap nie ma jeszcze zadań.</p><button className="primary" onClick={() => setTab('plan')}>Dodaj zadania w Planie</button></div>}
         <div className="now-steps">{stage.steps.map(renderStep)}</div>
       </> : <div className="plan-empty"><h1>{complete ? 'Plan wykonany ✓' : 'Zacznij od planu'}</h1><p>{complete ? (openDiscussions.length ? 'Zadania wykonane. Poniżej pozostały problemy do omówienia.' : 'Wszystkie etapy są gotowe.') : 'Dodaj etapy, a w nich zadania do wykonania.'}</p><button className="primary" onClick={complete ? onComplete : () => setTab('plan')}>{complete ? 'Zakończ projekt' : 'Ułóż plan'}</button>{complete && <button className="text-button" onClick={() => setTab('plan')}>Dodaj kolejne zadania</button>}</div>}
       {otherDiscussions.length > 0 && <section className="open-discussions"><h3>Do omówienia · {otherDiscussions.length}</h3>{otherDiscussions.map(([id]) => <div key={id}><h4>✓ {stepTitle(id)}</h4>{discussion(id)}</div>)}</section>}
@@ -52,12 +54,13 @@ export default function ProjectPlanner({ task, onPatch, onComplete, children }) 
       {stages.map((s, i) => <section className="plan-stage" key={s.id}>
         <div className="stage-heading"><span>{i + 1}.</span><Rename value={s.title} label="Nazwa etapu" onSave={title => updateStage(s.id, { title })}/></div>
         <div className="order-controls"><button disabled={i === 0} onClick={() => saveStages(moveItem(stages, i, -1))} aria-label={`Przesuń etap ${s.title} w górę`}>↑</button><button disabled={i === stages.length - 1} onClick={() => saveStages(moveItem(stages, i, 1))} aria-label={`Przesuń etap ${s.title} w dół`}>↓</button><button onClick={() => { if (confirm(`Usunąć etap „${s.title}” wraz z zadaniami?`)) saveStages(stages.filter(x => x.id !== s.id)) }}>Usuń etap</button></div>
-        {s.steps.map((t, j) => <div className="plan-task" key={t.id}><div className="plan-task-title"><input type="checkbox" aria-label={`Wykonano: ${t.title}`} checked={t.done} onChange={e => { if (e.target.checked) onPatch(project => finishStep(project, t.id)); else updateStage(s.id, { done: false, steps: s.steps.map(x => x.id === t.id ? { ...x, done: false } : x) }) }}/><Rename value={t.title} label="Nazwa zadania" onSave={title => updateStage(s.id, { steps: s.steps.map(x => x.id === t.id ? { ...x, title } : x) })}/></div><div className="order-controls"><button disabled={j === 0} onClick={() => updateStage(s.id, { steps: moveItem(s.steps, j, -1) })} aria-label={`Przesuń zadanie ${t.title} w górę`}>↑</button><button disabled={j === s.steps.length - 1} onClick={() => updateStage(s.id, { steps: moveItem(s.steps, j, 1) })} aria-label={`Przesuń zadanie ${t.title} w dół`}>↓</button><button onClick={() => { if (confirm(`Usunąć zadanie „${t.title}”?`)) updateStage(s.id, { steps: s.steps.filter(x => x.id !== t.id), done: false }) }}>Usuń</button></div>{t.done && discussion(t.id)}</div>)}
+        {s.steps.map((t, j) => <div className="plan-task" key={t.id}><div className="plan-task-title"><input type="checkbox" aria-label={`Wykonano: ${t.title}`} checked={t.done} onChange={e => { if (e.target.checked) onPatch(project => finishStep(project, t.id)); else updateStage(s.id, { done: false, steps: s.steps.map(x => x.id === t.id ? { ...x, done: false } : x) }) }}/><Rename value={t.title} label="Nazwa zadania" onSave={title => updateStage(s.id, { steps: s.steps.map(x => x.id === t.id ? { ...x, title } : x) })}/></div><div className="order-controls"><button disabled={j === 0} onClick={() => updateStage(s.id, { steps: moveItem(s.steps, j, -1) })} aria-label={`Przesuń zadanie ${t.title} w górę`}>↑</button><button disabled={j === s.steps.length - 1} onClick={() => updateStage(s.id, { steps: moveItem(s.steps, j, 1) })} aria-label={`Przesuń zadanie ${t.title} w dół`}>↓</button><button onClick={() => { if (confirm(`Usunąć zadanie „${t.title}”?`)) updateStage(s.id, { steps: s.steps.filter(x => x.id !== t.id), done: false }) }}>Usuń</button></div>{t.description && <details className="task-instruction"><summary>Instrukcja</summary><p className="step-instructions">{t.description}</p></details>}{t.done && discussion(t.id)}</div>)}
         <AddItem label="Dodaj zadanie do etapu" onAdd={title => updateStage(s.id, { done: false, steps: [...s.steps, { id: crypto.randomUUID(), title, done: false }] })}/>
         <PlanNotes scope={s.title} entries={s.planNotes} onSave={planNotes => updateStage(s.id, { planNotes })}/>
       </section>)}
       <AddItem label="Nazwa nowego etapu" onAdd={title => saveStages([...stages, { id: crypto.randomUUID(), title, steps: [] }])}/>
       {stages.length > 0 && <button className="primary start-plan" onClick={() => setTab('now')}>Przejdź do działania →</button>}
+      <button className="secondary" onClick={()=>{try{setExportError('');downloadPlan(task)}catch(err){setExportError(err.message)}}}>↓ Eksportuj plan i postęp</button>{exportError && <p role="alert" className="import-error">{exportError}</p>}
       {children}
       <button className="text-button" onClick={onComplete}>{task.completed ? 'Przywróć projekt' : 'Zakończ cały projekt'}</button>
     </section>}
