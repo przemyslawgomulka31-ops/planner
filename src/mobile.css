@@ -4,13 +4,13 @@ html{scroll-padding-top:calc(var(--header-height) + 66px);scroll-padding-bottom:
 html,body{overscroll-behavior-y:auto}body{touch-action:pan-y pinch-zoom}
 .phone-app{margin:0 auto;min-height:100svh;border-radius:0;padding-top:var(--header-height);padding-bottom:calc(var(--nav-height) + 24px)}
 .topbar{top:0;inset-inline:0;margin-inline:auto;left:0;transform:none;height:var(--header-height);border-radius:0;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px))}
-.bottom-nav{bottom:0;left:0;right:0;transform:none;will-change:auto;width:100%;max-width:520px;height:var(--nav-height);margin-inline:auto;padding:4px max(12px,env(safe-area-inset-right,0px)) calc(4px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));border-radius:0;border:0;border-top:1px solid var(--line);background:#232e27;backdrop-filter:none;box-shadow:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.bottom-nav{bottom:0;left:0;right:0;transform:none;will-change:auto;width:100%;max-width:520px;height:var(--nav-height);margin-inline:auto;padding:4px max(12px,env(safe-area-inset-right,0px)) calc(4px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));border-radius:0;border:0;border-top:1px solid var(--line);background:#111216;backdrop-filter:none;box-shadow:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .bottom-nav button,.bottom-nav button.active{width:100%;height:56px;transform:none;transition:color .12s,background-color .12s;border-radius:12px}.bottom-nav button span{font-size:11px}.bottom-nav svg{width:23px;height:23px;flex:none}
 html[data-keyboard=true] .bottom-nav{visibility:hidden;pointer-events:none}html[data-keyboard=true] .toast{bottom:16px}
 .content{overflow:visible}.project-tabs{position:sticky;top:var(--header-height);z-index:15;margin-inline:-4px;border:1px solid var(--line);isolation:isolate;box-shadow:0 4px 12px #0002}.project-tabs button{min-height:44px;touch-action:manipulation}
 [hidden]{display:none!important}
 button,summary,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent}button:disabled{cursor:default}
-button:focus-visible,summary:focus-visible,a:focus-visible{outline:2px solid #9cd6b5;outline-offset:3px}
+button:focus-visible,summary:focus-visible,a:focus-visible{outline:2px solid #a7bbdf;outline-offset:3px}
 input,textarea,select{scroll-margin-top:calc(var(--header-height) + 82px);scroll-margin-bottom:100px}
 .primary{height:auto;min-height:52px;padding:14px 18px}.secondary{min-height:44px;white-space:normal;flex-shrink:0}.text-button,.note-actions .text-button,.now-step .text-button,.order-controls button,.section-head>button,.more,.icon-btn,.add-round,.inline-editor button{min-width:44px;min-height:44px}
 .rename-title{min-height:44px}.plan-task-title>input,.check{width:28px;height:28px;flex:0 0 28px;margin:8px;cursor:pointer}.stage-heading,.plan-task-title{gap:6px}.order-controls button:last-child{min-height:44px}
@@ -22,3 +22,18 @@ summary{min-height:44px;line-height:1.5}.now-step{align-items:flex-start}.now-st
 @media(max-width:360px){.content{padding-inline:12px}.plan-stage{padding:10px}.add-stage{flex-wrap:wrap}.add-stage input{flex-basis:100%;width:100%!important}.add-stage .secondary{max-width:none}.project-tabs button{padding-inline:8px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 .simple-plan label.step-checkbox{display:flex;align-items:center;justify-content:center;width:44px;height:44px;flex:0 0 44px;margin:0;cursor:pointer}.step-checkbox input{width:24px;height:24px;margin:0;accent-color:#76b08e;cursor:pointer}.check,.status-toggle{width:44px;height:44px;flex-basis:44px;margin:0}.step-history article>div{flex:1}
+/* Use the currently visible viewport on iOS, including short pages. */
+html,body,#root{min-height:100%;background:#090a0c}
+.phone-app{min-height:100vh;min-height:100dvh;background:#101114}
+.bottom-nav{top:calc(var(--visible-bottom,100vh) - var(--nav-height));bottom:auto;background:#111216}
+@supports(height:100dvh){.bottom-nav{top:calc(var(--visible-bottom,100dvh) - var(--nav-height))}}
+.bottom-nav::after{content:'';position:absolute;top:100%;left:0;right:0;height:env(safe-area-inset-bottom,0px);background:#111216;pointer-events:none}
+.bottom-nav button.active{background:#292e38;color:#e0e6f2}.bottom-nav button{color:#9da4b1}
+.project-swipe{position:relative;border-radius:16px;overflow:hidden;background:#303b50;isolation:isolate}
+.project-finish{position:absolute;inset:0 0 0 auto;width:108px;border:0;background:#303b50;color:#f1f3f9;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;font-size:22px}.project-finish span{font-size:14px;font-weight:650}
+.project-swipe-front{position:relative;z-index:1;transition:transform .18s ease;touch-action:pan-y pinch-zoom;border-radius:16px;background:#191b20}
+.project-swipe-front.is-dragging{transition:none}.project-swipe .project-card{min-height:102px;padding-right:56px;background:#191b20;touch-action:pan-y pinch-zoom}
+.project-options{position:absolute;top:10px;right:8px;width:44px;height:44px;border:0;background:transparent;border-radius:10px;color:#abb1bf;letter-spacing:1px}
+.project-options:focus-visible{outline:2px solid #a7bbdf;outline-offset:-3px}.project-finish:focus-visible{outline:2px solid #d8e2f5;outline-offset:-5px}
+@media(hover:hover){.project-swipe .project-card:hover{background:#22252b}.project-options:hover{background:#30343e}}
+@media(prefers-reduced-motion:reduce){.project-swipe-front{transition:none}}

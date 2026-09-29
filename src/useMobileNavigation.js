@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { keyboardVisible, readRoute, routeHash, viewKey } from './mobileNavigation'
+import { keyboardVisible, visibleBottom, readRoute, routeHash, viewKey } from './mobileNavigation'
 
 export function useNavigation() {
   const [view, setView] = useState(() => readRoute(window.location.hash))
@@ -35,15 +35,23 @@ export function useMobileKeyboard() {
     let frame
     const update = () => {
       const editing = document.activeElement?.matches('input:not([type=checkbox]):not([type=radio]):not([type=file]),textarea,[contenteditable=true]') || false
-      document.documentElement.dataset.keyboard = String(keyboardVisible({ layoutHeight: window.innerHeight, viewportHeight: viewport.height, scale: viewport.scale, editing }))
+      const keyboard = keyboardVisible({ layoutHeight: window.innerHeight, viewportHeight: viewport.height, scale: viewport.scale, editing })
+      document.documentElement.dataset.keyboard = String(keyboard)
+      const bottom = visibleBottom({ height: viewport.height, offsetTop: viewport.offsetTop, scale: viewport.scale, keyboard })
+      if (bottom !== null) document.documentElement.style.setProperty('--visible-bottom', bottom + 'px')
     }
     const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(update) }
     viewport.addEventListener('resize', schedule)
+    viewport.addEventListener('scroll', schedule)
+    window.addEventListener('resize', schedule)
     document.addEventListener('focusin', schedule); document.addEventListener('focusout', schedule)
     update()
     return () => {
       cancelAnimationFrame(frame); viewport.removeEventListener('resize', schedule)
       document.removeEventListener('focusin', schedule); document.removeEventListener('focusout', schedule)
+      viewport.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
+      document.documentElement.style.removeProperty('--visible-bottom')
       delete document.documentElement.dataset.keyboard
     }
   }, [])
